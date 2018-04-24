@@ -1,0 +1,42 @@
+project(authority_service)
+cmake_minimum_required(VERSION 2.8)
+
+set(AUTHORITY_SERVICE_VERSION 0.1.0.0)
+set(AUTHORITY_SERVICE_VERSION 1)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+ADD_DEFINITIONS(-D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_1)
+ADD_DEFINITIONS(-D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_2)
+ADD_DEFINITIONS(-D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_4)
+ADD_DEFINITIONS(-D__GCC_HAVE_SYNC_COMPARE_AND_SWAP_8)
+
+if(EXISTS $ENV{TOOLKITS} )
+SET(TOOLKITS_DIR $ENV{TOOLKITS})
+else()
+message(FATAL_ERROR "authority_service -- Please Define TOOLKITS!")
+endif()
+
+#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../lib)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+
+link_directories(
+${TOOLKITS_DIR}/lib
+)
+
+include_directories(
+${TOOLKITS_DIR}/include
+)
+
+aux_source_directory(. SRC_LIST)
+
+ADD_EXECUTABLE(authority_service ${SRC_LIST})
+
+TARGET_LINK_LIBRARIES(authority_service
+ACE
+pthread
+)
+
+#set_target_properties(authority_service PROPERTIES VERSION ${AUTHORITY_SERVICE_VERSION} SOVERSION ${AUTHORITY_SERVICE_VERSION})
+#INSTALL(TARGETS authority_service RUNTIME DESTINATION ${INSTALL_DIR}/bin)
+
+
