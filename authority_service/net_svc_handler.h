@@ -48,8 +48,14 @@ public:
             }
             else
             {
+                ACE_DEBUG ((LM_INFO, ACE_TEXT("[fd:%d,remote_addr:%s,sremote_ip:%s,nremote_ip:%d] -> close\r\n"),
+                            this->get_handle(),
+                            sremote_addr_,
+                            remote_ip_,
+                            nremote_ip_,
+                            recv_buf_));
                 this->close();
-                this->shutdown();
+                //this->shutdown();
             }
         }
         else
@@ -111,6 +117,7 @@ public:
                         sremote_addr_,
                         remote_ip_,
                         nremote_ip_));
+            is_parse_remote_addr_ = true;
         }
 
         return 0;
