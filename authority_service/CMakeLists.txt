@@ -40,3 +40,5 @@ pthread
 #INSTALL(TARGETS authority_service RUNTIME DESTINATION ${INSTALL_DIR}/bin)
 
 
+CREATE TABLE IF NOT EXISTS `authority_terminal`(`index` INT UNSIGNED AUTO_INCREMENT, PRIMARY KEY(`index`), `key` VARCHAR(128) NOT NULL, `status` INT NOT NULL DEFAULT '1')ENGINE=InnoDB DEFAULT CHARSET=utf8;
+INSERT INTO `authority_terminal`(`key`) VALUE ("ddddddddddddddddddddd");

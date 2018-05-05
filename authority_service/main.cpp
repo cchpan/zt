@@ -3,6 +3,9 @@
 #include "net_svc_handler.h"
 #include "net_server.h"
 #include "creactor_task.h"
+#include "authority_handler.h"
+#include "ace/Message_Queue.h"
+
 
 int ACE_TMAIN(int /*argc*/, char **/*argv*/)
 {
@@ -13,6 +16,23 @@ int ACE_TMAIN(int /*argc*/, char **/*argv*/)
     select_reactor->minit("my_select_reactor", TYPE_ACE_SELECT_REACTOR);
     select_reactor->start();
 
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief authority_handler
+    /// todo: initialise()and run()
+    if (Authority_Handler::instance()->initialise())
+    {
+        ACE_DEBUG((LM_INFO, ACE_TEXT("Authority_Handler initialise Succsseful...\r\n")));
+    }
+    else
+    {
+        ACE_DEBUG((LM_INFO, ACE_TEXT("Authority_Handler initialise fail...\r\n")));
+        return -1;
+    }
+    Authority_Handler::instance()->run();
+
+    /////////////////////////////////////////////////////////////////////////////
+    /// \brief Net_Server
+    /// todo: listen
     Net_Server<Net_SVC_Handler> net_server;
     net_server.initialise();
 

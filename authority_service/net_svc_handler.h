@@ -4,6 +4,8 @@
 #include <ace/Svc_Handler.h>
 #include <ace/INET_Addr.h>
 
+#include "authority_handler.h"
+
 class Net_SVC_Handler : public ACE_Svc_Handler<ACE_SOCK_STREAM, ACE_MT_SYNCH>
 {
     typedef ACE_Svc_Handler<ACE_SOCK_STREAM, ACE_MT_SYNCH> Super;
@@ -34,7 +36,12 @@ public:
     {
         get_remote_peer_info();
         (void)(fd);
-        int rc = ACE_OS::recv(this->get_handle(), recv_buf_, sizeof(recv_buf_));
+        ///////////////////////////////////////////////////////// new test
+        static const int MSG_BLOCK_LEN = 256;
+        ACE_Message_Block *message_block = new ACE_Message_Block(MSG_BLOCK_LEN);
+        /////////////////////////////////////////////////////////
+
+        int rc = ACE_OS::recv(this->get_handle(), message_block->wr_ptr(), MSG_BLOCK_LEN);
         if (rc <= 0)
         {
             if (errno == ETIME || errno == ETIMEDOUT)
@@ -43,33 +50,24 @@ public:
                             this->get_handle(),
                             sremote_addr_,
                             remote_ip_,
-                            nremote_ip_,
-                            recv_buf_));
+                            nremote_ip_));
             }
             else
             {
-                ACE_DEBUG ((LM_INFO, ACE_TEXT("[fd:%d,remote_addr:%s,sremote_ip:%s,nremote_ip:%d] -> close\r\n"),
-                            this->get_handle(),
-                            sremote_addr_,
-                            remote_ip_,
-                            nremote_ip_,
-                            recv_buf_));
                 this->close();
-                //this->shutdown();
+                this->shutdown();
             }
         }
         else
         {
-            ACE_DEBUG ((LM_INFO, ACE_TEXT("recv from [fd:%d,remote_addr:%s,sremote_ip:%s,nremote_ip:%d] -> %s\r\n"),
-                        this->get_handle(),
-                        sremote_addr_,
-                        remote_ip_,
-                        nremote_ip_,
-                        recv_buf_));
+//            ACE_DEBUG ((LM_INFO, ACE_TEXT("recv from [fd:%d,remote_addr:%s,sremote_ip:%s,nremote_ip:%d] -> %s\r\n"),
+//                        this->get_handle(),
+//                        sremote_addr_,
+//                        remote_ip_,
+//                        nremote_ip_,
+//                        recv_buf_));
             ///todo:
-            ///
-            ///
-            ///
+            Authority_Handler::instance()->put_msg(message_block);
         }
         return 0;
     }
@@ -117,13 +115,10 @@ public:
                         sremote_addr_,
                         remote_ip_,
                         nremote_ip_));
-            is_parse_remote_addr_ = true;
         }
 
         return 0;
     }
-
-
 
 private:
     bool is_parse_remote_addr_;
